@@ -107,6 +107,7 @@ venv.bak/
 
 # some other ones
 media/
+departments/migrations/
 
 blogs/migrations
 courses/migrations
