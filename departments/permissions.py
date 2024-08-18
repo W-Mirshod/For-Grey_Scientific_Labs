@@ -16,7 +16,7 @@ class IsDoctor(permissions.BasePermission):
         return self.has_permission(request, view)
 
 
-class IsThisDoctor(permissions.BasePermission):
+class IsOwnProfile(permissions.BasePermission):
     message = 'You do not have permission to enter this page.'
 
     def has_permission(self, request, view):
@@ -32,9 +32,9 @@ class IsThisDoctor(permissions.BasePermission):
         return False
 
 
-class IsOwnProfile(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return obj == request.user
+# class IsOwnProfile(permissions.BasePermission):
+#     def has_object_permission(self, request, view, obj):
+#         return obj == request.user
 
 
 class IsRelevantDoctor(permissions.BasePermission):

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from rest_framework.fields import SerializerMethodField
 
 from departments.models import Departments, PatientRecords
@@ -52,9 +52,34 @@ class DoctorDetailSerializer(serializers.ModelSerializer):
 
 
 class PatientSerializer(serializers.ModelSerializer):
+    group = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all(), write_only=True)
+    groups = SerializerMethodField()
+    email = SerializerMethodField()
+
+    def get_groups(self, obj):
+        obj_groups = obj.groups.all()
+        groups = []
+        for group in obj_groups:
+            groups.append(group.name)
+        if groups:
+            return groups
+        return None
+
+    def get_email(self, obj):
+        if obj.email:
+            return obj.email
+        return None
+
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id', 'username', 'groups', 'group', 'email', 'date_joined']
+
+    def create(self, validated_data):
+        group = validated_data.pop('group', None)
+        user = super().create(validated_data)
+        if group:
+            user.groups.add(group)
+        return user
 
 
 class PatientRecordSerializer(serializers.ModelSerializer):
