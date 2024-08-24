@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
-from departments.models import PatientRecords, Departments
+from departments.models import PatientRecords, Departments, Doctors, Patients
 from departments.forms import CustomGroupForm
 
 from django.contrib.auth.admin import GroupAdmin
 
 admin.site.unregister(Group)
+
+
 # admin.site.unregister(User)
 
 
@@ -16,13 +18,14 @@ class CustomGroupAdmin(GroupAdmin):
 admin.site.register(Group, CustomGroupAdmin)
 
 
-# class UserAdmin(admin.ModelAdmin):
-#     list_display = ('id', 'username', 'email', 'is_staff', 'is_active', 'is_superuser', 'date_joined')
-#     search_fields = ('username', 'email')
-#     list_filter = ('is_active', 'is_staff', 'is_superuser')
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('id', 'username', 'email', 'is_staff', 'is_active', 'is_superuser', 'date_joined')
+    search_fields = ('username', 'email')
+    list_filter = ('is_active', 'is_staff', 'is_superuser')
 
 
-# admin.site.register(User, UserAdmin)
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
 
 @admin.register(PatientRecords)
@@ -39,3 +42,17 @@ class DepartmentsAdmin(admin.ModelAdmin):
     search_fields = ['name']
     list_filter = ['id', 'name']
     exclude = ['slug']
+
+
+@admin.register(Patients)
+class PatientsAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'department', 'group']
+    search_fields = ['user']
+    list_filter = ['id', 'user']
+
+
+@admin.register(Doctors)
+class DoctorsAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'department', 'group']
+    search_fields = ['user']
+    list_filter = ['id', 'user']

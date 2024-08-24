@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models
 from django.utils.text import slugify
 
@@ -32,6 +32,30 @@ class Departments(models.Model):
         verbose_name_plural = 'Departments'
 
 
+class Patients(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='patient_user')
+    department = models.ForeignKey(Departments, on_delete=models.CASCADE, related_name='patient_department')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.department.name}"
+
+    class Meta:
+        verbose_name_plural = 'Patients'
+
+
+class Doctors(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor_user')
+    department = models.ForeignKey(Departments, on_delete=models.CASCADE, related_name='doctor_department')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.department}"
+
+    class Meta:
+        verbose_name_plural = 'Doctors'
+
+
 class PatientRecords(models.Model):
     record_id = models.AutoField(primary_key=True)
     slug = models.SlugField(unique=True, blank=True)
@@ -55,7 +79,7 @@ class PatientRecords(models.Model):
             i = 1
             while True:
                 new_slug = f"{slugify(self.patient_id.username)}-{i}"
-                if not Departments.objects.filter(slug=new_slug).exists():
+                if not PatientRecords.objects.filter(slug=new_slug).exists():
                     self.slug = new_slug
                     break
                 i += 1

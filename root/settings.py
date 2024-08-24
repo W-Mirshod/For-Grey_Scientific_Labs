@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
-import environ
+from datetime import timedelta
 from pathlib import Path
+
+import environ
 
 env = environ.Env(DEBUG=(bool, False))
 
@@ -31,6 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+INTERNAL_IPS = ('127.0.0.1', '192.168.0.1',)
+
 # Application definition
 INSTALLED_APPS = [
     'jazzmin',
@@ -43,16 +47,20 @@ INSTALLED_APPS = [
     'departments.apps.DepartmentsConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'root.urls'
@@ -129,6 +137,17 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
+
+CACHES = {
+    'default': {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        'LOCATION': BASE_DIR / 'cache',
+    }
+}
+
+# CACHE_MIDDLEWARE_ALIAS = 'default'
+# CACHE_MIDDLEWARE_SECONDS = '600'
+# CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 # my custom admin panel's configurations
 JAZZMIN_SETTINGS = {
